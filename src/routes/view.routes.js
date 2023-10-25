@@ -6,17 +6,15 @@ import { dbM as dbCart } from './api/carts.routes.js';
 export const router = Router();
 
 router.get("/products", async (req, res) => {
-
-    
-
+    if(!req?.user?.email) return res.redirect("/login")
     try {
         const { limit, page, sort } = req.query
         let on = await dbInstance.getProducts(limit, page, sort)
         let productos = JSON.parse(JSON.stringify(on))
         console.log(productos)
         res.render("products", {
-            email: req.session.email,
-            adminRole: req.session.adminRole,
+            email: req.user.email,
+            adminRole: req.user.adminRole,
             hasNextPage: productos.hasNextPage,
             hasPrevPage: productos.hasPrevPage,
             nextLink: productos.nextLink ? `http://localhost:8080/products?page=${productos.page + 1}&limit=${limit?limit:10}` : null,
@@ -30,7 +28,7 @@ router.get("/products", async (req, res) => {
 })
 
 router.get("/products/:pid", async (req, res) => {
-
+    if(!req?.user?.email) return res.redirect("/login")
     try {
         const { pid } = req.params
         let on = await dbInstance.getProductById(pid)
@@ -45,7 +43,7 @@ router.get("/products/:pid", async (req, res) => {
 })
 
 router.get("/carts/:cid", async (req, res) => {
-
+    if(!req?.user?.email) return res.redirect("/login")
     try {
         const { cid } = req.params
         let on = await dbCart.getCartById(cid)
@@ -60,8 +58,7 @@ router.get("/carts/:cid", async (req, res) => {
 })
 
 router.get("/login", async (req, res) => {
-
-    if(req.session.email) return res.redirect("/products")
+    if(req?.user?.email) return res.redirect("/products")
     try {
 
         res.render("login")
@@ -71,7 +68,7 @@ router.get("/login", async (req, res) => {
 })
 
 router.get("/register", async (req, res) => {
-    if(req.session.email) return res.redirect("/products")
+    if(req?.user?.email) return res.redirect("/products")
 
     try {
 
@@ -84,17 +81,17 @@ router.get("/register", async (req, res) => {
 
 /** esto funciona */
 router.get("/profile", async (req, res) => { 
-    if (!req.session.email) 
+    if(!req?.user?.email)
     {
         return res.redirect("/login")
     }
     res.render("profile", {
         title: "Vista Profile Admin",
-        first_name: req.session.first_name,
-        last_name: req.session.last_name,
-        email: req.session.email,
-        adminRole: req.session.adminRole,
-        age: req.session.age
+        first_name: req.user.first_name,
+        last_name: req.user.last_name,
+        email: req.user.email,
+        adminRole: req.user.adminRole,
+        age: req.user.age
 
     });
 })

@@ -7,9 +7,11 @@ import { router as viewsRouter } from "./routes/view.routes.js"
 import { router as sessionRouter } from "./routes/api/sessions.routes.js"
 
 import "./dao/dbConfig.js"
+import "./passport/passport.config.js"
 
 import session  from "express-session";
 import  FileStore  from "session-file-store";
+import passport from "passport";
 
 
 const app = express()
@@ -24,6 +26,9 @@ app.use(session({
     secret:"default",
     
 }))
+
+app.use(passport.initialize())
+app.use(passport.session())
 
 
 //Api Routes
@@ -43,8 +48,6 @@ app.set("view engine", "handlebars")
 app.get('/', (req, res) => {
     res.redirect('/login')
 })
-
-
 
 const PORT = 8080
 

@@ -12,9 +12,9 @@ export default class UserManager {
         }
 
     }
-    findeUserByEmail = async (email) => {
+    findUserByEmail = async (email) => {
         try {
-            let user = await User.findOne({ email: email })
+            let user = await User.findOne({ email: email.toString() });
            
             return {
                 success: user ? user : false
